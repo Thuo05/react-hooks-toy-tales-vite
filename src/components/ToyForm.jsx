@@ -1,22 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 
-function ToyForm() {
+function ToyForm({ onToySubmit }) {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    fetch("/toys", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        image,
+        likes: 0,
+      }),
+    })
+      .then((response) => response.json())
+      .then((newToy) => {
+        onToySubmit(newToy);
+        setName("");
+        setImage("");
+      });
+  }
+
   return (
     <div className="container">
-      <form className="add-toy-form">
+      <form className="add-toy-form" onSubmit={handleSubmit}>
         <h3>Create a toy!</h3>
         <input
           type="text"
           name="name"
+          value={name}
           placeholder="Enter a toy's name..."
           className="input-text"
+          onChange={(event) => setName(event.target.value)}
         />
         <br />
         <input
           type="text"
           name="image"
+          value={image}
           placeholder="Enter a toy's image URL..."
           className="input-text"
+          onChange={(event) => setImage(event.target.value)}
         />
         <br />
         <input
